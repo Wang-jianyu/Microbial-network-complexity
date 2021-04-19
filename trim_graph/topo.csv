@@ -1,0 +1,2 @@
+,Node.number,Edge.number,Positive.edge,Negative.edge,Average.degree,Diameter,Clustering.coefficient,Average.path.length,Modularity,Centralization.closeness,Centralization.betweenness,Edge.connectivity,Average.neighborhood,Connectance,Nestedness
+1,193,689,689,0,7.139896373,13,0.433597464,4.803629834,0.527256009,0.014831894,0.241242589,0,8.139896373,0.03718696,0.069184405
