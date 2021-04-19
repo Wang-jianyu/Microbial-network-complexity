@@ -4,7 +4,7 @@
 rm(list = ls())
 require(igraph)
 require(tidyverse)
-otutb.name <- list.files("trim_otu//", pattern = '.csv')
+otutb.name <- list.files("network_otu//", pattern = '.csv')
 
 Net_Infer <- function(p.mat.corr = p.mat.corr, 
                       p.mat.jac = p.mat.jac,
@@ -39,7 +39,7 @@ Net_Infer <- function(p.mat.corr = p.mat.corr,
   # remove isolated nodes
   g.adj <- V(g.adj)[igraph::degree(g.adj) == 0] %>%  igraph::delete.vertices(g.adj,.)
   write.graph(g.adj,
-              file = paste("trim_graph/", 
+              file = paste("network_graph/", 
                            graph.name,
                            sep = ""),
               format = "graphml")
@@ -48,7 +48,7 @@ Net_Infer <- function(p.mat.corr = p.mat.corr,
 # RMT
 # require(RMThreshold)
 
-# cor.mat = read.csv(paste("trim_otu/boot_mean/sp_",otutb.name,sep=""),header = TRUE, row.names = 1)
+# cor.mat = read.csv(paste("network_otu/boot_mean/sp_",otutb.name,sep=""),header = TRUE, row.names = 1)
 # rm.get.threshold(as.matrix(cor.mat),interactive = F,discard.zeros = T,discard.outliers = F,interval = c(0.2,0.95),plot.comp=F)
 
 #The Spearman threshold of the six site-level fungal networks was around 0.6.
@@ -59,15 +59,15 @@ jac.threshold.list <- c(0.2)
 
 
 
-  p.mat.corr = read.csv(paste("trim_otu/pmat/sp_",otutb.name,sep=""),
+  p.mat.corr = read.csv(paste("network_otu/pmat/sp_",otutb.name,sep=""),
                           header = TRUE,row.names = 1)
-  p.mat.jac = read.csv(paste("trim_otu/pmat/jac_",otutb.name,sep=""),
+  p.mat.jac = read.csv(paste("network_otu/pmat/jac_",otutb.name,sep=""),
                           header = TRUE,row.names = 1)
-  cor.mat = read.csv(paste("trim_otu/boot_mean/sp_",otutb.name,sep=""),
+  cor.mat = read.csv(paste("network_otu/boot_mean/sp_",otutb.name,sep=""),
                      header = TRUE, row.names = 1)
-  jac.mat = read.csv(paste("trim_otu/boot_mean/jac_",otutb.name,sep=""),
+  jac.mat = read.csv(paste("network_otu/boot_mean/jac_",otutb.name,sep=""),
                       header = TRUE, row.names = 1)
-  otu.tb = read.csv(paste("trim_otu/",otutb.name,sep=""),
+  otu.tb = read.csv(paste("network_otu/",otutb.name,sep=""),
                     header = TRUE,row.names = 1) %>% t()
   graph.name = gsub("csv","graphml",otutb.name)
   jac.threshold <- jac.threshold.list

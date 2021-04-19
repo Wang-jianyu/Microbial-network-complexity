@@ -5,8 +5,8 @@ require(igraph)
 require(tidyverse)
 rm(list=ls())
 source('function.R')
-graph.name <- list.files("trim_graph//", pattern = '.graphml')
-otutb.name <- list.files("trim_otu//", pattern = '.csv')
+graph.name <- list.files("network_graph//", pattern = '.graphml')
+otutb.name <- list.files("network_otu//", pattern = '.csv')
 
 net_topo <- function(net){ 
   require(igraph)
@@ -48,11 +48,11 @@ net_topo <- function(net){
 
 
 
-  ot <- paste("trim_otu/",otutb.name,sep = "") %>% 
+  ot <- paste("network_otu/",otutb.name,sep = "") %>% 
     read.csv(header = TRUE,row.names = 1)
-  net <- read.graph(paste("trim_graph/",graph.name,
+  net <- read.graph(paste("network_graph/",graph.name,
                           sep = ""),format = "graphml")
-  topo_trim <- NULL
+  topo_network <- NULL
   for (k in 1:20) {
     
     sub_net <- induced_subgraph(net, which(V(net)$name %in% 
@@ -62,12 +62,12 @@ net_topo <- function(net){
     
     topo<-net_topo(sub_net)
     
-    # write.graph(sub_net,paste0("trim_graph/sub_graph/",
+    # write.graph(sub_net,paste0("network_graph/sub_graph/",
     #                            gsub(".csv",paste0('_sample_',k,".graphml"),otutb.name)),
     #             format = "graphml")
     topo<-c(gsub(".csv",paste0('_sample_',k),otutb.name),topo)
-    topo_trim <- rbind(topo_trim,topo)
+    topo_network <- rbind(topo_network,topo)
     
   }
 
-write.csv(topo_trim,'trim_graph/sub_graph/topo_trim_sub.csv')
+write.csv(topo_network,'network_graph/sub_graph/topo_sub_network_sub.csv')

@@ -5,17 +5,17 @@ require(igraph)
 require(reshape2)
 
 #Create new folders
-dir.create('trim_otu/');dir.create('trim_graph/');
-dir.create('trim_otu/perm');dir.create('trim_otu/pmat');    
-dir.create('trim_otu/boot_mean');dir.create('trim_otu/boot_sd');
-dir.create('trim_graph/sub_graph/')
+dir.create('netowrk_otu/');dir.create('netowrk_graph/');
+dir.create('netowrk_otu/perm');dir.create('netowrk_otu/pmat');    
+dir.create('netowrk_otu/boot_mean');dir.create('netowrk_otu/boot_sd');
+dir.create('netowrk_graph/sub_graph/')
 
 #Elevation only for 3755m
-otutb.name <- list.files("trim_otu//", pattern = '.csv')
+otutb.name <- list.files("netowrk_otu//", pattern = '.csv')
 
 ####Jaccard dissimilarity####
 ###permutation procedure
-jac_p_matrix <- function(otutable=paste("trim_otu/",otutb.name,sep = "")){
+jac_p_matrix <- function(otutable=paste("netowrk_otu/",otutb.name,sep = "")){
   perm <- function(x){return(sample(x))}
   ot <- read.csv(otutable,header = TRUE,row.names = 1)
   jac.mean.perm <- matrix(0, nrow=nrow(ot), ncol=nrow(ot))
@@ -29,7 +29,7 @@ jac_p_matrix <- function(otutable=paste("trim_otu/",otutb.name,sep = "")){
   return(jac.mean.perm)
 }
 ###bootstrap procedure
-jac_boot_matrix <- function(otutable=paste("trim_otu/",otutb.name,sep = "")){
+jac_boot_matrix <- function(otutable=paste("netowrk_otu/",otutb.name,sep = "")){
   ot <- read.csv(otutable,header = TRUE,row.names = 1)
   jac.sd.boot <- matrix(0, nrow=nrow(ot), ncol=nrow(ot))
   jac.mean.boot <- matrix(0, nrow=nrow(ot), ncol=nrow(ot))
@@ -67,18 +67,18 @@ jac_boot_matrix <- function(otutable=paste("trim_otu/",otutb.name,sep = "")){
 
 
 
-  ot.trim.jac.boot <- jac_boot_matrix(otutable=paste("trim_otu/",otutb.name,sep = ""))
-  ot.trim.jac.perm <- jac_p_matrix(paste("trim_otu/",otutb.name,sep = ""))
-  write.csv(ot.trim.jac.perm, paste("trim_otu/perm/jac_",otutb.name,sep = ""))
-  write.csv(ot.trim.jac.boot[[1]],paste("trim_otu/boot_mean/jac_",otutb.name,sep = ""))
-  write.csv(ot.trim.jac.boot[[2]],paste("trim_otu/boot_sd/jac_",otutb.name,sep = ""))
+  ot.netowrk.jac.boot <- jac_boot_matrix(otutable=paste("netowrk_otu/",otutb.name,sep = ""))
+  ot.netowrk.jac.perm <- jac_p_matrix(paste("netowrk_otu/",otutb.name,sep = ""))
+  write.csv(ot.netowrk.jac.perm, paste("netowrk_otu/perm/jac_",otutb.name,sep = ""))
+  write.csv(ot.netowrk.jac.boot[[1]],paste("netowrk_otu/boot_mean/jac_",otutb.name,sep = ""))
+  write.csv(ot.netowrk.jac.boot[[2]],paste("netowrk_otu/boot_sd/jac_",otutb.name,sep = ""))
 
 
 
 
 ####Spearman correlation####
 ###permutation procedure
-sp_p_matrix <- function(otutable=paste("trim_otu/",otutb.name,sep = "")){
+sp_p_matrix <- function(otutable=paste("netowrk_otu/",otutb.name,sep = "")){
   perm <- function(x){return(sample(x))}
   ot <- read.csv(otutable,header = TRUE, row.names = 1)
   sp.mean.perm <- matrix(0, nrow=nrow(ot), ncol=nrow(ot))
@@ -93,7 +93,7 @@ sp_p_matrix <- function(otutable=paste("trim_otu/",otutb.name,sep = "")){
 }
 
 ###bootstrap procedure
-sp_boot_matrix <- function(otutable=paste("trim_otu/",otutb.name,sep = "")){
+sp_boot_matrix <- function(otutable=paste("netowrk_otu/",otutb.name,sep = "")){
   ot <- t(read.csv(otutable,header = TRUE,row.names = 1))
   sp.sd.boot <- sp.mean.boot <- matrix(0, nrow=ncol(ot), ncol=ncol(ot))
   for(j in 1:1000){
@@ -116,23 +116,23 @@ sp_boot_matrix <- function(otutable=paste("trim_otu/",otutb.name,sep = "")){
 }
 
 
-  ot.trim.sp.boot <- sp_boot_matrix(paste("trim_otu/",otutb.name,sep = ""))
-  ot.trim.sp.perm <- sp_p_matrix(paste("trim_otu/",otutb.name,sep = ""))
-  ot.trim.sp.perm[is.na(ot.trim.sp.perm)] <- 0
-  ot.trim.sp.boot[[1]][is.na(ot.trim.sp.boot[[1]])] <- 0
-  ot.trim.sp.boot[[2]][is.na(ot.trim.sp.boot[[2]])] <- 0
-  write.csv(ot.trim.sp.perm, paste("trim_otu/perm/sp_",otutb.name,sep = ""))
-  write.csv(ot.trim.sp.boot[[1]],paste("trim_otu/boot_mean/sp_",otutb.name,sep = ""))
-  write.csv(ot.trim.sp.boot[[2]],paste("trim_otu/boot_sd/sp_",otutb.name,sep = ""))
+  ot.netowrk.sp.boot <- sp_boot_matrix(paste("netowrk_otu/",otutb.name,sep = ""))
+  ot.netowrk.sp.perm <- sp_p_matrix(paste("netowrk_otu/",otutb.name,sep = ""))
+  ot.netowrk.sp.perm[is.na(ot.netowrk.sp.perm)] <- 0
+  ot.netowrk.sp.boot[[1]][is.na(ot.netowrk.sp.boot[[1]])] <- 0
+  ot.netowrk.sp.boot[[2]][is.na(ot.netowrk.sp.boot[[2]])] <- 0
+  write.csv(ot.netowrk.sp.perm, paste("netowrk_otu/perm/sp_",otutb.name,sep = ""))
+  write.csv(ot.netowrk.sp.boot[[1]],paste("netowrk_otu/boot_mean/sp_",otutb.name,sep = ""))
+  write.csv(ot.netowrk.sp.boot[[2]],paste("netowrk_otu/boot_sd/sp_",otutb.name,sep = ""))
 
 ### estimate p values####
 # The P value was then obtained as the probability of 
 # the null value under a Gaussian curve fitted to the 
 # mean and standard deviation of the bootstrap distribution.
 
-  sp.mean.perm <- read.csv(paste("trim_otu/perm/sp_",otutb.name,sep=""),row.names = 1)
-  sp.mean.boot <- read.csv(paste("trim_otu/boot_mean/sp_",otutb.name,sep=""),row.names = 1)
-  sp.sd.boot <- read.csv(paste("trim_otu/boot_sd/sp_",otutb.name,sep=""),row.names = 1)
+  sp.mean.perm <- read.csv(paste("netowrk_otu/perm/sp_",otutb.name,sep=""),row.names = 1)
+  sp.mean.boot <- read.csv(paste("netowrk_otu/boot_mean/sp_",otutb.name,sep=""),row.names = 1)
+  sp.sd.boot <- read.csv(paste("netowrk_otu/boot_sd/sp_",otutb.name,sep=""),row.names = 1)
 
   cor.p <- matrix(0, nrow=nrow(sp.mean.boot), ncol=ncol(sp.mean.boot))
   for(i in 1:nrow(sp.mean.boot)) {
@@ -144,13 +144,13 @@ sp_boot_matrix <- function(otutable=paste("trim_otu/",otutb.name,sep = "")){
       cor.p[i,j] <- p$p.value
     }
   }
-  write.csv(cor.p,paste("trim_otu/pmat/sp_",otutb.name,sep=""))
+  write.csv(cor.p,paste("netowrk_otu/pmat/sp_",otutb.name,sep=""))
 
 
 
-  jac.mean.perm <- read.csv(paste("trim_otu/perm/jac_",otutb.name,sep=""),row.names = 1)
-  jac.mean.boot <- read.csv(paste("trim_otu/boot_mean/jac_",otutb.name,sep=""),row.names = 1)
-  jac.sd.boot <- read.csv(paste("trim_otu/boot_sd/jac_",otutb.name,sep=""),row.names = 1)
+  jac.mean.perm <- read.csv(paste("netowrk_otu/perm/jac_",otutb.name,sep=""),row.names = 1)
+  jac.mean.boot <- read.csv(paste("netowrk_otu/boot_mean/jac_",otutb.name,sep=""),row.names = 1)
+  jac.sd.boot <- read.csv(paste("netowrk_otu/boot_sd/jac_",otutb.name,sep=""),row.names = 1)
   
   cor.p <- matrix(0, nrow=nrow(jac.mean.perm), ncol=ncol(jac.mean.perm))
   for(i in 1:nrow(jac.mean.perm)) {
@@ -162,4 +162,4 @@ sp_boot_matrix <- function(otutable=paste("trim_otu/",otutb.name,sep = "")){
       cor.p[i,j] <- p$p.value
     }
   }
-  write.csv(cor.p,paste("trim_otu/pmat/jac_",otutb.name,sep=""))
+  write.csv(cor.p,paste("netowrk_otu/pmat/jac_",otutb.name,sep=""))
