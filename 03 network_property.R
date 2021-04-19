@@ -1,7 +1,7 @@
 #### network property ####
 rm(list=ls())
 require(igraph)
-source('function.R')
+source('unodf.R')
 otutb.name <- list.files("network_otu//", pattern = '.csv')
 
 net_topo <- function(net){ 
@@ -80,7 +80,7 @@ vn_property <- function(net,otutable){
   
   V(net)$bf<-substr(V(net)$name,1,1)
   
-  E(net)$edge_type <- apply(strnetwork(get.edgelist(net),1),1,function(x) paste0(x[1],x[2]))
+  E(net)$edge_type <- apply(strtrim(get.edgelist(net),1),1,function(x) paste0(x[1],x[2]))
   
   return(net)
   
@@ -102,3 +102,4 @@ vn_property <- function(net,otutable){
 
   topo <- net_topo(net)
   write.csv(topo,'network_graph/topo.csv')
+  

@@ -4,7 +4,7 @@
 require(igraph)
 require(tidyverse)
 rm(list=ls())
-source('function.R')
+source('unodf.R')
 graph.name <- list.files("network_graph//", pattern = '.graphml')
 otutb.name <- list.files("network_otu//", pattern = '.csv')
 

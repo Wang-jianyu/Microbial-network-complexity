@@ -1,67 +1,145 @@
-unodf=function(A=matrix, selfloop=FALSE){
-  
-  if(nrow(A)!=ncol(A)){ stop("The matrix is non-square (m-by-n for which m-n). Please input a square matrix.")}
-  
-  if(selfloop==FALSE & sum(diag(A))>0){
-    warning("Please note that the network contains self-loops and these were discarded. To consider them, please set 'selfloop=TRUE'.") 
-    diag(A)=0
-    }
-  if(selfloop==TRUE & sum(diag(A))==0){
-    warning("Please note that 'selfloop=TRUE' but this network does not contain self-loops. If self-loops are possible in your system, ignore this message and proceed; otherwise please set 'selfloop=FALSE' and run it again.")
-    }
+removeSpeciesMultilayer <- function(network,species){
+  network[species,] <- 0
+  network[,species] <-0
+  return(network)
+}
 
-  m=dim(A)[1]
-  n=dim(A)[2]
+nc <- function (matrix){
+  #matrix: the adjacent matrix of association network
+  eig <- eigen(matrix,only.values = TRUE)
+  exp.eig <- exp(eig$values)
+  natural_connectivity <- log(mean(exp.eig))
+  return(natural_connectivity)
+}
+
+robustness <- function(net,percent,decrease){
+
+  dataMain <- as.matrix(get.adjacency(net, attr = 'weight'))
+  dataMain[dataMain != 0] <- 1
   
-  cmarg=apply(A,2,sum) 
-  nest.m.c=matrix(0,n,n)
+  dataMainOrg <- dataMain
   
-  for (i in 1:n){
+  aboundance <- c(V(net)$abundance)
+  names(aboundance) <- V(net)$name
+  
+  aboundance <- aboundance   %>%  sort(decreasing = decrease)   %>%  names()
+  
+  network_connetivity<-list()
+  extinctionOrder<-list()
+  network_connetivity[[1]] <- nc(dataMain)
+  x=0
+  repeat{  
+    x=x+1
+    if(length(aboundance)==0)    break
+    extinctionOrder[[x]]<-aboundance[1]
+    dataMain<-removeSpeciesMultilayer(dataMain,aboundance[1])
     
-    for (j in 1:n){
-      
-      if (cmarg[i]<cmarg[j]){ 
-        
-        den=cmarg[i] 
-        if(selfloop==FALSE){ if(A[j,i]==1){den=den-1} }  			
-        if (den>0){
-          sum.r=A[,i] + A[,j]
-          nest=sum(sum.r==2)/den
-          nest.m.c[i,j]=nest 
-        }	
-      }
-    }
-  }
-  
-  rmarg=apply(A,1,sum) 
-  nest.m.r=matrix(0,m,m)
-  
-  for (i in 1:m){
+    second<-colSums(dataMain) <= colSums(dataMainOrg)*(1-percent)
     
-    for (j in 1:m){
-      
-      if (rmarg[i]<rmarg[j]){ 
-        
-        den=rmarg[i]
-        if(selfloop==FALSE){ if(A[i,j]==1){den=den-1} }
-        
-        if (den>0){
-          sum.r=A[i,] + A[j,]
-          nest=sum(sum.r==2)/den
-          nest.m.r[i,j]=nest
-        }	
-      }
-    }
+    dataMain<-which(second) %>% names() %>% removeSpeciesMultilayer(dataMain,.)
+    
+    aboundance<-aboundance   %in% colnames(dataMain)[-which(second)]   %>% which(.) %>%  aboundance[.]
+    network_connetivity[[x+1]]<-nc(dataMain)
   }
+  rm(x)
+  network_connetivity <- do.call(rbind,network_connetivity)
+  extinctionOrder <- do.call(c,extinctionOrder)
   
-  aux1=(sum(cmarg==0)*(n-1))
-  aux2=(sum(rmarg==0)*(m-1))
+  rownames(network_connetivity) <- c('Initial',extinctionOrder)
   
-  network.nest.c=(2*sum(nest.m.c, na.rm=TRUE))/((n*(n-1)-aux1))
-  network.nest.r=(2*sum(nest.m.r,na.rm=TRUE))/((m*(m-1)-aux2)) 
+  d <- data.frame(order = rep(0:length(extinctionOrder),1),
+                  extant = c(network_connetivity),
+                  Percentage=percent)
+  d$extant <- as.numeric(d$extant)
+  d$order <- as.numeric(d$order)
+  d$order <- d$order/ncol(dataMainOrg)
+  return(d)
   
-  result=data.frame(network.nest.c,network.nest.r)
-  names(result)=c("UNODFc","UNODFr")
-  return(result)
+}
+
+degree_robustness <- function(net,percent,decrease){
+  
+  dataMain <- as.matrix(get.adjacency(net, attr = 'weight'))
+  dataMain[dataMain != 0] <- 1
+  
+  dataMainOrg <- dataMain
+  
+  aboundance <- c(V(net)$node.degree)
+  names(aboundance) <- V(net)$name
+  
+  aboundance <- aboundance   %>%  sort(decreasing = decrease)   %>%  names()
+  
+  network_connetivity<-list()
+  extinctionOrder<-list()
+  network_connetivity[[1]] <- nc(dataMain)
+  x=0
+  repeat{  
+    x=x+1
+    if(length(aboundance)==0)    break
+    extinctionOrder[[x]]<-aboundance[1]
+    dataMain<-removeSpeciesMultilayer(dataMain,aboundance[1])
+    
+    second<-colSums(dataMain) <= colSums(dataMainOrg)*(1-percent)
+    
+    dataMain<-which(second) %>% names() %>% removeSpeciesMultilayer(dataMain,.)
+    
+    aboundance<-aboundance   %in% colnames(dataMain)[-which(second)]   %>% which(.) %>%  aboundance[.]
+    network_connetivity[[x+1]]<-nc(dataMain)
+  }
+  rm(x)
+  network_connetivity <- do.call(rbind,network_connetivity)
+  extinctionOrder <- do.call(c,extinctionOrder)
+  
+  rownames(network_connetivity) <- c('Initial',extinctionOrder)
+  
+  d <- data.frame(order = rep(0:length(extinctionOrder),1),
+                  extant = c(network_connetivity),
+                  Percentage=percent)
+  d$extant <- as.numeric(d$extant)
+  d$order <- as.numeric(d$order)
+  d$order <- d$order/ncol(dataMainOrg)
+  return(d)
+  
+}
+
+
+rand_robustness <- function(times,net,percent){
+
+  dataMain <- as.matrix(get.adjacency(net, attr = 'weight'))
+  dataMain[dataMain != 0] <- 1
+
+  dataMainOrg <- dataMain
+  
+  aboundance <- V(net)$name %>% sample()
+  
+  network_connetivity<-list()
+  extinctionOrder<-list()
+  network_connetivity[[1]] <- nc(dataMain)
+  x=0
+  repeat{  
+    x=x+1
+    if(length(aboundance)==0)    break
+    extinctionOrder[[x]]<-aboundance[1]
+    dataMain<-removeSpeciesMultilayer(dataMain,aboundance[1])
+    second<-colSums(dataMain) <=colSums(dataMainOrg)*(1-percent)
+    dataMain<-which(second) %>% names() %>% removeSpeciesMultilayer(dataMain,.)
+    
+    aboundance<-aboundance   %in% colnames(dataMain)[-which(second)]   %>% which(.) %>%  aboundance[.] %>% sample()
+    network_connetivity[[x+1]] <- nc(dataMain)
+  }
+  rm(x)
+  network_connetivity <- do.call(rbind,network_connetivity)
+  extinctionOrder <- do.call(c,extinctionOrder)
+  
+  rownames(network_connetivity) <- c('Initial',extinctionOrder)
+  
+  d <- data.frame(order = rep(0:length(extinctionOrder),1),
+                  extant = c(network_connetivity),
+                  Percentage=percent,Times = times)
+  d$extant <- as.numeric(d$extant)
+  d$order <- as.numeric(d$order)
+  d$order <- d$order/ncol(dataMainOrg)
+  return(d)
+  
 }
 

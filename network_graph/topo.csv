@@ -1,2 +1,2 @@
-,Node.number,Edge.number,Positive.edge,Negative.edge,Average.degree,Diameter,Clustering.coefficient,Average.path.length,Modularity,Centralization.closeness,Centralization.betweenness,Edge.connectivity,Average.neighborhood,Connectance,Nestedness
-1,193,689,689,0,7.139896373,13,0.433597464,4.803629834,0.527256009,0.014831894,0.241242589,0,8.139896373,0.03718696,0.069184405
+"","Node.number","Edge.number","Positive.edge","Negative.edge","Average.degree","Diameter","Clustering.coefficient","Average.path.length","Modularity","Centralization.closeness","Centralization.betweenness","Edge.connectivity","Average.neighborhood","Connectance","Nestedness"
+"1",193,689,689,0,7.13989637305699,13,0.433597464342314,4.80362983389983,0.527256009319158,0.0148318939296296,0.241242589310415,0,8.139896373057,0.0371869602763385,0.0691844047330503
