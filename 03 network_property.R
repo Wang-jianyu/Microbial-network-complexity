@@ -1,7 +1,7 @@
 #### network property ####
 rm(list=ls())
 require(igraph)
-source('unodf.R')
+require(UNODF)
 otutb.name <- list.files("network_otu//", pattern = '.csv')
 
 net_topo <- function(net){ 
@@ -63,8 +63,6 @@ vn_property <- function(net,otutable){
   V(net)$node.centralization.closeness = closeness(net,normalized = TRUE)
   
   V(net)$abundance = rowSums(ot)[which(names(rowSums(ot)) %in% V(net)$name)]
-  
-  V(net)$Label = V(net)$name
   
   fc<-cluster_fast_greedy(net)  
   

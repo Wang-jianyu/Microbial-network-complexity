@@ -1,10 +1,8 @@
-# There is an outlier that we use the mean of the remaining 
-# 19 sample-level network attributes to supplement.
-
 require(igraph)
 require(tidyverse)
+require(UNODF)
 rm(list=ls())
-source('unodf.R')
+
 graph.name <- list.files("network_graph//", pattern = '.graphml')
 otutb.name <- list.files("network_otu//", pattern = '.csv')
 

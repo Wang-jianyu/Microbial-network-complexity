@@ -51,37 +51,25 @@ Net_Infer <- function(p.mat.corr = p.mat.corr,
 # cor.mat = read.csv(paste("network_otu/boot_mean/sp_",otutb.name,sep=""),header = TRUE, row.names = 1)
 # rm.get.threshold(as.matrix(cor.mat),interactive = F,discard.zeros = T,discard.outliers = F,interval = c(0.2,0.95),plot.comp=F)
 
-#The Spearman threshold of the six site-level fungal networks was around 0.6.
-cor.threshold.list <- c(0.6)
-#The Spearman threshold of the six site-level fungal networks 
-#was determined to be 0.2 by Berry and Widder 2014.
+#The Spearman threshold of the six site-level bacterial networks was around 0.8.
+cor.threshold.list <- c(0.8)
+#The jac threshold of the six site-level bacterial networks 
+#was setted to be 0.2 following Berry and Widder 2014.
 jac.threshold.list <- c(0.2)
 
-
-
-  p.mat.corr = read.csv(paste("network_otu/pmat/sp_",otutb.name,sep=""),
-                          header = TRUE,row.names = 1)
-  p.mat.jac = read.csv(paste("network_otu/pmat/jac_",otutb.name,sep=""),
-                          header = TRUE,row.names = 1)
-  cor.mat = read.csv(paste("network_otu/boot_mean/sp_",otutb.name,sep=""),
-                     header = TRUE, row.names = 1)
-  jac.mat = read.csv(paste("network_otu/boot_mean/jac_",otutb.name,sep=""),
-                      header = TRUE, row.names = 1)
-  otu.tb = read.csv(paste("network_otu/",otutb.name,sep=""),
-                    header = TRUE,row.names = 1) %>% t()
-  graph.name = gsub("csv","graphml",otutb.name)
-  jac.threshold <- jac.threshold.list
-  cor.threshold <- cor.threshold.list
-  
-  
-  Net_Infer(p.mat.corr = p.mat.corr, 
-            p.mat.jac = p.mat.jac,
-            cor.mat = cor.mat, 
-            jac.mat = jac.mat,
-            otu.tb = otu.tb,
+  Net_Infer(p.mat.corr = read.csv(paste("network_otu/pmat/sp_",otutb.name,sep=""),
+                                  header = TRUE,row.names = 1), 
+            p.mat.jac = read.csv(paste("network_otu/pmat/jac_",otutb.name,sep=""),
+                                 header = TRUE,row.names = 1),
+            cor.mat = read.csv(paste("network_otu/boot_mean/sp_",otutb.name,sep=""),
+                               header = TRUE, row.names = 1), 
+            jac.mat =  read.csv(paste("network_otu/boot_mean/jac_",otutb.name,sep=""),
+                                header = TRUE, row.names = 1),
+            otu.tb = read.csv(paste("network_otu/",otutb.name,sep=""),
+                              header = TRUE,row.names = 1) %>% t(),
             p.adjust.methods='fdr',
-            cor.threshold = cor.threshold,
-            jac.threshold = jac.threshold,
-            graph.name = graph.name
+            cor.threshold = cor.threshold.list,
+            jac.threshold = jac.threshold.list,
+            graph.name = gsub("csv","graphml",otutb.name)
   )
   
