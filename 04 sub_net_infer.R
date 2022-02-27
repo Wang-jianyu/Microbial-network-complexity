@@ -1,7 +1,9 @@
 require(igraph)
 require(tidyverse)
-require(UNODF)
 rm(list=ls())
+if(grepl('Windows',sessionInfo()$running)) 
+  source('unodf.R',encoding = 'utf-8') else require(UNODF)
+
 
 graph.name <- list.files("network_graph//", pattern = '.graphml')
 otutb.name <- list.files("network_otu//", pattern = '.csv')
@@ -61,8 +63,7 @@ net_topo <- function(net){
     topo<-net_topo(sub_net)
     
     # write.graph(sub_net,paste0("network_graph/sub_graph/",
-    #                            gsub(".csv",paste0('_sample_',k,".graphml"),otutb.name)),
-    #             format = "graphml")
+    #    gsub(".csv",paste0('_sample_',k,".graphml"),otutb.name)),format = "graphml")
     topo<-c(gsub(".csv",paste0('_sample_',k),otutb.name),topo)
     topo_network <- rbind(topo_network,topo)
     

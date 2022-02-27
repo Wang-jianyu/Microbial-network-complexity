@@ -1,7 +1,9 @@
 #### network property ####
 rm(list=ls())
 require(igraph)
-require(UNODF)
+if(grepl('Windows',sessionInfo()$running)) 
+  source('unodf.R',encoding = 'utf-8') else require(UNODF)
+
 otutb.name <- list.files("network_otu//", pattern = '.csv')
 
 net_topo <- function(net){ 
